@@ -2,4 +2,7 @@
 C:\Users\Marcin\Desktop\VS - Projekty\MazeBFS\MazeBFS\Source.c(44,30): warning C4013: 'malloc' undefined; assuming extern returning int
 C:\Users\Marcin\Desktop\VS - Projekty\MazeBFS\MazeBFS\Source.c(47,49): warning C4047: '=': 'Node **' differs in levels of indirection from 'int'
 C:\Users\Marcin\Desktop\VS - Projekty\MazeBFS\MazeBFS\Source.c(44,1): warning C4047: 'initializing': 'Node ***' differs in levels of indirection from 'int'
+C:\Users\Marcin\Desktop\VS - Projekty\MazeBFS\MazeBFS\Source.c(54,1): warning C4047: 'initializing': 'Node *' differs in levels of indirection from 'int'
+C:\Users\Marcin\Desktop\VS - Projekty\MazeBFS\MazeBFS\Source.c(81,1): warning C4047: 'initializing': 'Node **' differs in levels of indirection from 'int'
+C:\Users\Marcin\Desktop\VS - Projekty\MazeBFS\MazeBFS\Source.c(77): warning C4715: 'getNode': not all control paths return a value
   MazeBFS.vcxproj -> C:\Users\Marcin\Desktop\VS - Projekty\MazeBFS\Debug\MazeBFS.exe

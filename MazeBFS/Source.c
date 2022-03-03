@@ -4,8 +4,6 @@
 #define MAZE_HEIGHT 5
 #define MAZE_WIDTH 5
 
-struct Node;
-
 char mazePattern[MAZE_HEIGHT][MAZE_WIDTH] = {
 	{'.', '.', '.', '.', '.'},
 	{'.', '.', '.', '.', '.'},
@@ -51,17 +49,77 @@ struct Node*** mazeInit(int height, int width) {
 	{
 		for (int j = 0; j < width; j++)
 		{
-			struct Node node = { j, i, NOT_VISITED, mazePattern[i][j], NULL };
-			maze[i][j] = &node;
+			struct Node* node = malloc(sizeof(struct Node));
+			node->x = j;
+			node->y = i;
+			node->isVisited = NOT_VISITED;
+			node->sign = mazePattern[i][j];
+			node->parent = NULL;
+			maze[i][j] = node;
 		}
 	}
 
 	return maze;
 }
 
+struct Node* getNode(struct Maze maze, int x, int y) {
+	for (int i = 0; i < maze.height; i++)
+	{
+		for (int j = 0; j < maze.width; j++)
+		{
+			if (i == y && j == x) {
+				return maze.grid[i][j];
+			}
+		}
+	}
+}
+
+struct Node** getNeighbours(struct Maze maze, struct Node* node, int* size) {
+	int idx = 0;
+	struct Node** neighbours = malloc(4 * sizeof(struct Node*));
+	// up
+	if (node->y > 0) {
+		if (maze.grid[node->y - 1][node->x]->sign != '#') {
+			neighbours[idx] = maze.grid[node->y - 1][node->x];
+			idx += 1;
+		}
+	}
+	// right
+	if (node->x < maze.width - 1) {
+		if (maze.grid[node->y][node->x + 1]->sign != '#') {
+			neighbours[idx] = maze.grid[node->y][node->x + 1];
+			idx += 1;
+		}
+	}
+	// down
+	if (node->y < maze.height - 1) {
+		if (maze.grid[node->y + 1][node->x]->sign != '#') {
+			neighbours[idx] = maze.grid[node->y + 1][node->x];
+			idx += 1;
+		}
+	}
+	// left
+	if (node->x > 0) {
+		if (maze.grid[node->y][node->x - 1]->sign != '#') {
+			neighbours[idx] = maze.grid[node->y][node->x - 1];
+			idx += 1;
+		}
+	}
+
+	*size = idx;
+	return neighbours;
+}
+
 
 int main() {
 	struct Maze maze = { mazeInit(MAZE_HEIGHT, MAZE_WIDTH), MAZE_HEIGHT, MAZE_WIDTH };
+	struct Node* myNode = getNode(maze, 2, 2);
+	int size;
+	struct Node** neighbours = getNeighbours(maze, myNode, &size);
+	for (int i = 0; i < size; i++)
+	{
+		neighbours[i]->sign = 'B';
+	}
 	printMaze(maze);
 	return 0;
 }
