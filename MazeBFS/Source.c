@@ -4,11 +4,16 @@
 #define MAZE_HEIGHT 5
 #define MAZE_WIDTH 5
 
+/*
+	Pattern of the maze
+	'.' - empty space
+	'#' - blockade
+*/
 char mazePattern[MAZE_HEIGHT][MAZE_WIDTH] = {
+	{'S', '.', '.', '.', '.'},
 	{'.', '.', '.', '.', '.'},
 	{'.', '.', '.', '.', '.'},
-	{'.', '.', '.', '.', '.'},
-	{'.', '.', '.', '.', '.'},
+	{'.', '.', 'E', '.', '.'},
 	{'.', '.', '.', '.', '.'}
 };
 
@@ -26,6 +31,7 @@ struct Maze {
 	int width;
 };
 
+// Prints the whole maze
 void printMaze(struct Maze maze) {
 	for (int i = 0; i < maze.height; i++)
 	{
@@ -39,12 +45,14 @@ void printMaze(struct Maze maze) {
 }
 
 struct Node*** mazeInit(int height, int width) {
+	// Initializing 2d array
 	struct Node*** maze = malloc(height * sizeof(struct Node*));
 	for (int i = 0; i < height; i++)
 	{
 		maze[i] = malloc(width * sizeof(struct Node*));
 	}
 
+	// Filling up the array
 	for (int i = 0; i < height; i++)
 	{
 		for (int j = 0; j < width; j++)
@@ -62,7 +70,8 @@ struct Node*** mazeInit(int height, int width) {
 	return maze;
 }
 
-struct Node* getNode(struct Maze maze, int x, int y) {
+// Returns a node at (x,y)
+struct Node* getNodeByCoord(struct Maze maze, int x, int y) {
 	for (int i = 0; i < maze.height; i++)
 	{
 		for (int j = 0; j < maze.width; j++)
@@ -74,6 +83,22 @@ struct Node* getNode(struct Maze maze, int x, int y) {
 	}
 }
 
+// Returns a node with 'S' or 'E' symbol
+struct Node* getNodeBySign(struct Maze maze, char sign) {
+	if (sign != 'S' && sign != 'E') return NULL;
+	for (int i = 0; i < maze.height; i++)
+	{
+		for (int j = 0; j < maze.width; j++)
+		{
+			if (maze.grid[i][j]->sign == sign) {
+				return maze.grid[i][j];
+			}
+		}
+	}
+	return NULL;
+}
+
+// Returns array of neighbours of a node
 struct Node** getNeighbours(struct Maze maze, struct Node* node, int* size) {
 	int idx = 0;
 	struct Node** neighbours = malloc(4 * sizeof(struct Node*));
@@ -113,7 +138,7 @@ struct Node** getNeighbours(struct Maze maze, struct Node* node, int* size) {
 
 int main() {
 	struct Maze maze = { mazeInit(MAZE_HEIGHT, MAZE_WIDTH), MAZE_HEIGHT, MAZE_WIDTH };
-	struct Node* myNode = getNode(maze, 2, 2);
+	struct Node* myNode = getNodeByCoord(maze, 2, 2);
 	int size;
 	struct Node** neighbours = getNeighbours(maze, myNode, &size);
 	for (int i = 0; i < size; i++)
