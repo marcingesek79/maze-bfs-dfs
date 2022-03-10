@@ -1,14 +1,18 @@
 #include<stdio.h>
-#define VISITED 1
-#define NOT_VISITED 0
+#include<stdbool.h>
 #define MAZE_HEIGHT 5
 #define MAZE_WIDTH 5
+#define START 'S'
+#define END 'E'
 
 /*
 	Pattern of the maze
 	'.' - empty space
 	'#' - blockade
+	'S' - start node
+	'E' - end node
 */
+
 char mazePattern[MAZE_HEIGHT][MAZE_WIDTH] = {
 	{'S', '.', '.', '.', '.'},
 	{'#', '#', '.', '#', '.'},
@@ -20,102 +24,78 @@ char mazePattern[MAZE_HEIGHT][MAZE_WIDTH] = {
 struct Node {
 	int x;
 	int y;
-	int isVisited;
-	char sign;
+	bool isVisited;
+	char type;
 	struct Node* parent;
 };
 
 struct Maze {
-	struct Node*** grid;
-	int height;
-	int width;
+	struct Node* grid[MAZE_HEIGHT][MAZE_WIDTH];
+	struct Node** path;
+	int pathSize;
 };
 
 
+// Checks whether the node is in the path
+bool isInPath(struct Maze* maze, struct Node* node) {
+	if (maze->path != NULL) {
+		for (int i = 0; i < maze->pathSize; i++) {
+			if (maze->path[i] == node) return true;
+		}
+	}
+	return false;
+}
+
 // Prints the whole maze
-void printMaze(struct Maze maze, struct Node** path, int pathSize) {
-	for (int i = 0; i < maze.height; i++)
-	{
-		for (int j = 0; j < maze.width; j++)
-		{
-			if (maze.grid[i][j]->sign == 'S') {
+void printMaze(struct Maze* maze, bool withPath) {
+	for (int i = 0; i < MAZE_HEIGHT; i++) {
+		for (int j = 0; j < MAZE_WIDTH; j++) {
+			if (maze->grid[i][j]->type == START) {
 				printf("S");
 			}
-			else if (maze.grid[i][j]->sign == 'E') {
+			else if (maze->grid[i][j]->type == END) {
 				printf("E");
 			}
-			else if (isInPath(maze.grid[i][j], path, pathSize)) {
+			else if (withPath && isInPath(maze, maze->grid[i][j])) {
 				printf("X");
 			}
 			else {
-				printf("%c", maze.grid[i][j]->sign);
+				printf("%c", maze->grid[i][j]->type);
 			}
-			if (j == maze.width - 1) printf("\n");
-			else printf(" ");
+
+			j == MAZE_WIDTH - 1 ? printf("\n") : printf(" ");
 		}
 	}
+	printf("\n\n");
 }
 
-int isInPath(struct Node* node, struct Node** path, int pathSize) {
-	//printf("%c", path[0]->sign);
-	for (int i = 0; i < pathSize; i++)
+// Initalizes the maze
+void mazeInit(struct Maze* maze) {
+	for (int i = 0; i < MAZE_HEIGHT; i++)
 	{
-		//printf("%c", path[i]->sign);
-		if (path[i] == node) {
-			return 1;
-		}
-	}
-	return 0;
-}
-
-struct Node*** mazeInit(int height, int width) {
-	// Initializing 2d array
-	struct Node*** maze = malloc(height * sizeof(struct Node*));
-	for (int i = 0; i < height; i++)
-	{
-		maze[i] = malloc(width * sizeof(struct Node*));
-	}
-
-	// Filling up the array
-	for (int i = 0; i < height; i++)
-	{
-		for (int j = 0; j < width; j++)
+		for (int j = 0; j < MAZE_WIDTH; j++)
 		{
 			struct Node* node = malloc(sizeof(struct Node));
 			node->x = j;
 			node->y = i;
-			node->isVisited = NOT_VISITED;
-			node->sign = mazePattern[i][j];
+			node->isVisited = false;
+			node->type = mazePattern[i][j];
 			node->parent = NULL;
-			maze[i][j] = node;
+			maze->grid[i][j] = node;
 		}
 	}
-
-	return maze;
-}
-
-// Returns a node at (x,y)
-struct Node* getNodeByCoord(struct Maze maze, int x, int y) {
-	for (int i = 0; i < maze.height; i++)
-	{
-		for (int j = 0; j < maze.width; j++)
-		{
-			if (i == y && j == x) {
-				return maze.grid[i][j];
-			}
-		}
-	}
+	maze->path = NULL;
+	maze->pathSize = 0;
 }
 
 // Returns a node with 'S' or 'E' symbol
-struct Node* getNodeBySign(struct Maze maze, char sign) {
-	if (sign != 'S' && sign != 'E') return NULL;
-	for (int i = 0; i < maze.height; i++)
-	{
-		for (int j = 0; j < maze.width; j++)
-		{
-			if (maze.grid[i][j]->sign == sign) {
-				return maze.grid[i][j];
+struct Node* getNodeBySign(struct Maze* maze, char type) {
+	if (type != START && type != END) return NULL;
+
+	for (int i = 0; i < MAZE_HEIGHT; i++) {
+		for (int j = 0; j < MAZE_WIDTH; j++) {
+			if (maze->grid[i][j]->type == type) {
+				return maze->grid[i][j];
 			}
 		}
 	}
@@ -124,101 +104,156 @@ struct Node* getNodeBySign(struct Maze maze, char sign) {
 
 // Returns array of neighbours of a node
 struct Node** getNeighbours(struct Maze maze, struct Node* node, int* size) {
-	int idx = 0;
-	struct Node** neighbours = malloc(4 * sizeof(struct Node*));
+	int i = 0;
+	struct Node** neighbours = malloc(4*sizeof(struct Node*));
+
 	// up
 	if (node->y > 0) {
-		if (maze.grid[node->y - 1][node->x]->sign != '#') {
-			neighbours[idx] = maze.grid[node->y - 1][node->x];
-			idx += 1;
+		if (maze.grid[node->y - 1][node->x]->type != '#') {
+			neighbours[i++] = maze.grid[node->y - 1][node->x];
 		}
 	}
 	// right
-	if (node->x < maze.width - 1) {
-		if (maze.grid[node->y][node->x + 1]->sign != '#') {
-			neighbours[idx] = maze.grid[node->y][node->x + 1];
-			idx += 1;
+	if (node->x < MAZE_WIDTH - 1) {
+		if (maze.grid[node->y][node->x + 1]->type != '#') {
+			neighbours[i++] = maze.grid[node->y][node->x + 1];
 		}
 	}
 	// down
-	if (node->y < maze.height - 1) {
-		if (maze.grid[node->y + 1][node->x]->sign != '#') {
-			neighbours[idx] = maze.grid[node->y + 1][node->x];
-			idx += 1;
+	if (node->y < MAZE_HEIGHT - 1) {
+		if (maze.grid[node->y + 1][node->x]->type != '#') {
+			neighbours[i++] = maze.grid[node->y + 1][node->x];
 		}
 	}
 	// left
 	if (node->x > 0) {
-		if (maze.grid[node->y][node->x - 1]->sign != '#') {
-			neighbours[idx] = maze.grid[node->y][node->x - 1];
-			idx += 1;
+		if (maze.grid[node->y][node->x - 1]->type != '#') {
+			neighbours[i++] = maze.grid[node->y][node->x - 1];
 		}
 	}
 
-	*size = idx;
+	struct Node** tmp = realloc(neighbours, i * sizeof(struct Node*));
+	if (tmp == NULL) {
+		*size = 0;
+		return NULL;
+	}
+
+	neighbours = tmp;
+	*size = i;
 	return neighbours;
 }
 
-struct Node* popFromQueue(struct Node*** queue, int* size) {
-	struct Node* firstElem = queue[0];
-	for (int i = 1; i < *size; i++)
-	{
-		queue[i - 1] = queue[i];
+// Pops a node from a queue
+struct Node* queuePop(struct Node*** queue, int* size) {
+	if (*size == 0) return NULL;
+	struct Node* firstElem = (*queue)[0];
+	
+	for (int i = 1; i < *size; i++) {
+		(*queue)[i - 1] = (*queue)[i];
 	}
-	(*size)--;
+	
+	if (*size == 1) {
+		(*size)--;
+		return firstElem;
+	}
+
+	struct Node** tmp = realloc(*queue, --(*size) * sizeof(struct Node*));
+	if (tmp == NULL) {
+		printf("error - pop");
+		return NULL;
+	}
+
+	*queue = tmp;
 	return firstElem;
 }
 
-struct Node** getPath(struct Maze* maze, int* pathSize, struct Node* endNode) {
-	*pathSize = 0;
-	struct Node* node = endNode;
-	struct Node** path = malloc(MAZE_HEIGHT * MAZE_WIDTH * sizeof(struct Node*));
-	path[*pathSize] = node;
-	(*pathSize)++;
-	while (node->parent != NULL) {
-		node = node->parent;
-		path[*pathSize] = node;
-		(*pathSize)++;
+// Pushes a node into a queue
+void queuePush(struct Node* node, struct Node*** queue, int* size) {
+	struct Node** tmp = realloc(*queue, ++(*size) * sizeof(struct Node*));
+	
+	if (tmp == NULL)
+	{
+		printf("error - push;");
+		return;
 	}
-	return path;
+
+	tmp[*size - 1] = node;
+	*queue = tmp;
 }
 
-struct Node** bfs(struct Maze* maze, struct Node** queue, int* queueSize, int* pathSize) {
-	struct Node* startNode = getNodeBySign(*maze, 'S');
-	struct Node* node;
-	queue[*queueSize] = startNode;
-	(*queueSize)++;
-	startNode->isVisited = VISITED;
-	while ((*queueSize) > 0) {
-		node = popFromQueue(queue, queueSize);
-		//printf("%d %d\n", node->x, node->y);
-		int neighboursSize = 0;
-		struct Node** neighbours = getNeighbours(*maze, node, &neighboursSize);
-		for (int i = 0; i < neighboursSize; i++)
-		{
-			if (neighbours[i]->isVisited == NOT_VISITED) {
-				neighbours[i]->parent = node;
-				neighbours[i]->isVisited = VISITED;
-				queue[*queueSize] = neighbours[i];
-				(*queueSize)++;
-				if (neighbours[i]->sign == 'E') {
-					return getPath(maze, pathSize, getNodeBySign(*maze, 'E'));
+// creates array with the nodes that belong to the path
+void getPath(struct Maze* maze) {
+	int pathSize = 0;
+	struct Node* node = getNodeBySign(maze, END);
+	struct Node** path = malloc(MAZE_HEIGHT * MAZE_WIDTH * sizeof(struct Node*));
+	path[pathSize++] = node;
+	
+	while (node->parent != NULL) {
+		node = node->parent;
+		path[pathSize++] = node;
+	}
+
+	struct Node** tmp = realloc(path, pathSize * sizeof(struct Node*));
+	if (tmp == NULL) {
+		printf("error - get path");
+		return;
+	}
+
+	maze->path = tmp;
+	maze->pathSize = pathSize;
+}
+
+// bfs algorithm
+void bfs(struct Maze* maze) {
+	struct Node* startNode = getNodeBySign(maze, START);
+	startNode->isVisited = true;
+	struct Node* currentNode = NULL;
+
+	struct Node** queue = malloc(sizeof(struct Node*));
+	int queueSize = 0;
+	queuePush(startNode, &queue, &queueSize);
+	
+	while (queueSize > 0) {
+		currentNode = queuePop(&queue, &queueSize);
+		int neighboursSize;
+		struct Node** neighbours = getNeighbours(*maze, currentNode, &neighboursSize);
+
+		for (int i = 0; i < neighboursSize; i++) {
+			if (!neighbours[i]->isVisited) {
+				neighbours[i]->parent = currentNode;
+				neighbours[i]->isVisited = true;
+				queuePush(neighbours[i], &queue, &queueSize);
+				if (neighbours[i]->type == END) {
+					getPath(maze);
 				}
 			}
 		}
 	}
+
+	printMaze(maze, true);
+	free(queue);
+}
+
+// frees memory
+void cleanUp(struct Maze* maze) {
+	for (int i = 0; i < MAZE_HEIGHT; i++)
+	{
+		for (int j = 0; j < MAZE_WIDTH; j++)
+		{
+			free(maze->grid[i][j]);
+		}
+	}
+	
+	free(maze->path);
 }
 
 
 int main() {
-	struct Maze maze = { mazeInit(MAZE_HEIGHT, MAZE_WIDTH), MAZE_HEIGHT, MAZE_WIDTH };
-	struct Node* myNode = getNodeByCoord(maze, 2, 2);
-	int size;
-	struct Node** neighbours = getNeighbours(maze, myNode, &size);
-	int queueSize = 0;
-	int pathSize = 0;
-	struct Node** queue = malloc(MAZE_HEIGHT * MAZE_WIDTH * sizeof(struct Node*));
-	struct Node** path = bfs(&maze, queue, &queueSize, &pathSize);
-	printMaze(maze, path, pathSize);
+	struct Maze maze;
+	mazeInit(&maze);
+
+	printMaze(&maze, false);
+	bfs(&maze);
+	cleanUp(&maze);
 	return 0;
 }

@@ -1,15 +1,13 @@
 ﻿  Source.c
-C:\Users\Marcin\Desktop\VS - Projekty\MazeBFS\MazeBFS\Source.c(47,21): warning C4013: 'isInPath' undefined; assuming extern returning int
-C:\Users\Marcin\Desktop\VS - Projekty\MazeBFS\MazeBFS\Source.c(73,30): warning C4013: 'malloc' undefined; assuming extern returning int
-C:\Users\Marcin\Desktop\VS - Projekty\MazeBFS\MazeBFS\Source.c(76,49): warning C4047: '=': 'Node **' differs in levels of indirection from 'int'
-C:\Users\Marcin\Desktop\VS - Projekty\MazeBFS\MazeBFS\Source.c(73,1): warning C4047: 'initializing': 'Node ***' differs in levels of indirection from 'int'
-C:\Users\Marcin\Desktop\VS - Projekty\MazeBFS\MazeBFS\Source.c(84,1): warning C4047: 'initializing': 'Node *' differs in levels of indirection from 'int'
-C:\Users\Marcin\Desktop\VS - Projekty\MazeBFS\MazeBFS\Source.c(128,1): warning C4047: 'initializing': 'Node **' differs in levels of indirection from 'int'
-C:\Users\Marcin\Desktop\VS - Projekty\MazeBFS\MazeBFS\Source.c(163,1): warning C4047: 'initializing': 'Node *' differs in levels of indirection from 'Node **'
-C:\Users\Marcin\Desktop\VS - Projekty\MazeBFS\MazeBFS\Source.c(175,1): warning C4047: 'initializing': 'Node **' differs in levels of indirection from 'int'
-C:\Users\Marcin\Desktop\VS - Projekty\MazeBFS\MazeBFS\Source.c(193,28): warning C4047: 'function': 'Node ***' differs in levels of indirection from 'Node **'
-C:\Users\Marcin\Desktop\VS - Projekty\MazeBFS\MazeBFS\Source.c(193,23): warning C4024: 'popFromQueue': different types for formal and actual parameter 1
-C:\Users\Marcin\Desktop\VS - Projekty\MazeBFS\MazeBFS\Source.c(220,1): warning C4047: 'initializing': 'Node **' differs in levels of indirection from 'int'
-C:\Users\Marcin\Desktop\VS - Projekty\MazeBFS\MazeBFS\Source.c(108): warning C4715: 'getNodeByCoord': not all control paths return a value
-C:\Users\Marcin\Desktop\VS - Projekty\MazeBFS\MazeBFS\Source.c(210): warning C4715: 'bfs': not all control paths return a value
+C:\Users\Marcin\Desktop\VS - Projekty\MazeBFS\MazeBFS\Source.c(78,30): warning C4013: 'malloc' undefined; assuming extern returning int
+C:\Users\Marcin\Desktop\VS - Projekty\MazeBFS\MazeBFS\Source.c(78,1): warning C4047: 'initializing': 'Node *' differs in levels of indirection from 'int'
+C:\Users\Marcin\Desktop\VS - Projekty\MazeBFS\MazeBFS\Source.c(135,29): warning C4013: 'realloc' undefined; assuming extern returning int
+C:\Users\Marcin\Desktop\VS - Projekty\MazeBFS\MazeBFS\Source.c(108,1): warning C4047: 'initializing': 'Node **' differs in levels of indirection from 'int'
+C:\Users\Marcin\Desktop\VS - Projekty\MazeBFS\MazeBFS\Source.c(135,1): warning C4047: 'initializing': 'Node **' differs in levels of indirection from 'int'
+C:\Users\Marcin\Desktop\VS - Projekty\MazeBFS\MazeBFS\Source.c(159,1): warning C4047: 'initializing': 'Node **' differs in levels of indirection from 'int'
+C:\Users\Marcin\Desktop\VS - Projekty\MazeBFS\MazeBFS\Source.c(170,1): warning C4047: 'initializing': 'Node **' differs in levels of indirection from 'int'
+C:\Users\Marcin\Desktop\VS - Projekty\MazeBFS\MazeBFS\Source.c(185,1): warning C4047: 'initializing': 'Node **' differs in levels of indirection from 'int'
+C:\Users\Marcin\Desktop\VS - Projekty\MazeBFS\MazeBFS\Source.c(193,1): warning C4047: 'initializing': 'Node **' differs in levels of indirection from 'int'
+C:\Users\Marcin\Desktop\VS - Projekty\MazeBFS\MazeBFS\Source.c(230,6): warning C4013: 'free' undefined; assuming extern returning int
+C:\Users\Marcin\Desktop\VS - Projekty\MazeBFS\MazeBFS\Source.c(208,1): warning C4047: 'initializing': 'Node **' differs in levels of indirection from 'int'
   MazeBFS.vcxproj -> C:\Users\Marcin\Desktop\VS - Projekty\MazeBFS\Debug\MazeBFS.exe
